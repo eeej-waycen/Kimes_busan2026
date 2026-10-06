@@ -432,6 +432,10 @@
     table.spec .dim{font-size:12px}
     table.spec .sub2{display:block;margin:3px 0 0;font-size:12px}
     table.spec .sub2 b{font-size:13.5px}
+    /* 기간: 날짜와 시간을 한 줄로 */
+    table.spec tr.one td{white-space:nowrap;font-size:13.5px}
+    table.spec tr.one .sub2{display:inline;margin:0 0 0 6px}
+    table.spec tr.one .sub2 b{font-size:12.5px;color:var(--text-2)}
   }
 
   /* 배치도 뷰어 */
@@ -553,7 +557,7 @@
   <div class="card" style="padding:4px 0">
     <table class="spec">
       <tbody>
-        <tr class="key"><th>기간</th><td><b>2026. 10. 23(금) ~ 25(일)</b><span class="sub2"><b>10:00~17:00</b></span></td></tr>
+        <tr class="key one"><th>기간</th><td><b>2026. 10. 23(금) ~ 25(일)</b><span class="sub2"><b>10:00~17:00</b></span></td></tr>
         <tr class="key"><th>장소</th><td><b>부산 BEXCO 제1전시장</b></td></tr>
         <tr class="key"><th>부스</th><td><span class="tag">F501</span><span class="tag alt">INSPIRE 특별관</span><span class="sub2"><span class="dim">1부스 · 조립부스</span></span></td></tr>
         <tr><th>행사명</th><td>KIMES Busan 2026 (부산국제의료기기·병원설비전시회)</td></tr>
