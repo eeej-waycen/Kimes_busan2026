@@ -215,6 +215,53 @@
     border-color:rgba(201,116,10,.3);
     border-color:color-mix(in srgb,var(--warn) 32%,transparent);
   }
+  button.crew-n{
+    appearance:none;-webkit-appearance:none;font-family:inherit;line-height:inherit;
+    cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+    transition:filter .15s;
+  }
+  button.crew-n:hover,button.crew-n[aria-expanded="true"]{filter:brightness(.94) saturate(1.2)}
+  button.crew-n:focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+
+  button.tel-link{
+    appearance:none;-webkit-appearance:none;background:none;border:0;padding:0;
+    font:inherit;color:var(--brand);font-weight:600;font-variant-numeric:tabular-nums;
+    text-decoration:underline;text-decoration-style:dotted;text-underline-offset:3px;
+    cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+  }
+  button.tel-link:focus-visible{outline:2px solid var(--brand);outline-offset:2px;border-radius:4px}
+
+  /* 근무자 연락처 말풍선 */
+  .cpop{
+    position:fixed;z-index:60;left:0;top:0;
+    background:var(--surface);color:var(--text);
+    border:1px solid var(--line);border-radius:12px;
+    box-shadow:0 8px 28px rgba(15,25,40,.16);
+    padding:10px 10px 10px 14px;
+    display:flex;align-items:center;gap:10px;
+    opacity:0;transform:translateY(4px);pointer-events:none;
+    transition:opacity .15s,transform .15s;
+  }
+  .cpop.on{opacity:1;transform:none;pointer-events:auto}
+  .cpop-info{display:flex;flex-direction:column;line-height:1.3;min-width:0}
+  .cpop-name{font-size:11.5px;font-weight:700;color:var(--text-3)}
+  .cpop-tel{font-size:13px;font-weight:700;letter-spacing:.01em;font-variant-numeric:tabular-nums;white-space:nowrap}
+  .cpop-btns{display:flex;gap:6px}
+  .cpop-btn{
+    appearance:none;-webkit-appearance:none;border:1px solid var(--line);
+    background:var(--surface-2);color:var(--text-2);
+    width:36px;height:36px;border-radius:10px;padding:0;cursor:pointer;
+    display:inline-flex;align-items:center;justify-content:center;
+    text-decoration:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+    transition:background .15s,color .15s,border-color .15s;
+  }
+  .cpop-btn:hover{color:var(--brand);border-color:var(--brand)}
+  .cpop-btn svg{width:17px;height:17px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+  .cpop-btn.call{background:var(--brand);border-color:var(--brand);color:#fff}
+  .cpop-btn.call:hover{color:#fff;filter:brightness(1.08)}
+  .cpop-btn.done{background:var(--accent);border-color:var(--accent);color:#fff}
+  @media (hover:hover) and (pointer:fine){ .cpop-btn.call{display:none} }
+
   @media (max-width:560px){
     .days{grid-template-columns:1fr}
     .day{padding:13px 15px}
@@ -513,6 +560,7 @@
         <tr><th>주관</th><td>한국이앤엑스 / 한국의료기기공업협동조합 / 한국의료기기산업협회 / KNN</td></tr>
         <tr><th>규모</th><td>참관객 약 11,000명</td></tr>
         <tr><th>사이트</th><td><a href="https://kimesbusan.com/" target="_blank" rel="noopener">kimesbusan.com</a></td></tr>
+        <tr><th>사무국</th><td><button type="button" class="tel-link" data-tel="02-551-0102" data-label="KIMES 사무국">02-551-0102</button></td></tr>
       </tbody>
     </table>
   </div>
@@ -529,8 +577,8 @@
       <div class="day-tag">개막일 · 의료진 방문 집중</div>
       <div class="day-crew">
         <span class="crew-l">근무</span>
-        <span class="crew-n c1">박은지 매니저</span>
-        <span class="crew-n c3">조민철 매니저</span>
+        <button type="button" class="crew-n c1">박은지 매니저</button>
+        <button type="button" class="crew-n c3">조민철 매니저</button>
       </div>
     </article>
     <article class="day">
@@ -542,9 +590,9 @@
       <div class="day-tag">주말 · 참관객 최다 예상</div>
       <div class="day-crew">
         <span class="crew-l">근무</span>
-        <span class="crew-n c1">박은지 매니저</span>
-        <span class="crew-n c3">조민철 매니저</span>
-        <span class="crew-n c2">이승우 매니저</span>
+        <button type="button" class="crew-n c1">박은지 매니저</button>
+        <button type="button" class="crew-n c3">조민철 매니저</button>
+        <button type="button" class="crew-n c2">이승우 매니저</button>
       </div>
     </article>
     <article class="day">
@@ -556,8 +604,8 @@
       <div class="day-tag">폐막일 · 종료 후 철수</div>
       <div class="day-crew">
         <span class="crew-l">근무</span>
-        <span class="crew-n c3">조민철 매니저</span>
-        <span class="crew-n c2">이승우 매니저</span>
+        <button type="button" class="crew-n c3">조민철 매니저</button>
+        <button type="button" class="crew-n c2">이승우 매니저</button>
       </div>
     </article>
   </div>
@@ -895,6 +943,152 @@ run(function(){
   function hide(){ if(!hidden && hint){ hidden = true; hint.className = 'vhint gone'; } }
   setTimeout(hide, 5000);
 });
+</script>
+<script>
+/* 근무자 연락처 말풍선: PC는 마우스 오버, 휴대폰은 탭 */
+(function(){
+  var CONTACTS = {
+    '박은지': '010-2887-9130',
+    '이승우': '010-8779-2087'
+  };
+
+  var ICON_COPY = '<svg viewBox="0 0 24 24"><rect x="9" y="9" width="11" height="11" rx="2"/><path d="M5 15V6a2 2 0 0 1 2-2h9"/></svg>';
+  var ICON_DONE = '<svg viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
+  var ICON_CALL = '<svg viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/></svg>';
+
+  var pop = document.createElement('div');
+  pop.className = 'cpop';
+  pop.setAttribute('role', 'dialog');
+  pop.innerHTML =
+    '<div class="cpop-info"><span class="cpop-name"></span><span class="cpop-tel"></span></div>' +
+    '<div class="cpop-btns">' +
+      '<button type="button" class="cpop-btn copy" aria-label="번호 복사" title="번호 복사">' + ICON_COPY + '</button>' +
+      '<a class="cpop-btn call" aria-label="전화 걸기" title="전화 걸기">' + ICON_CALL + '</a>' +
+    '</div>';
+  document.body.appendChild(pop);
+  var elName = pop.querySelector('.cpop-name');
+  var elTel = pop.querySelector('.cpop-tel');
+  var btnCopy = pop.querySelector('.copy');
+  var btnCall = pop.querySelector('.call');
+
+  var current = null, hideTimer = null, doneTimer = null;
+  var canHover = window.matchMedia && matchMedia('(hover:hover) and (pointer:fine)').matches;
+
+  function place(anchor){
+    var r = anchor.getBoundingClientRect();
+    var pw = pop.offsetWidth, ph = pop.offsetHeight, m = 8, vw = document.documentElement.clientWidth;
+    var left = Math.min(Math.max(m, r.left + r.width/2 - pw/2), vw - pw - m);
+    var top = r.top - ph - 8;
+    if(top < m) top = r.bottom + 8;
+    pop.style.left = left + 'px';
+    pop.style.top = top + 'px';
+  }
+
+  function show(btn){
+    clearTimeout(hideTimer);
+    if(current && current !== btn) current.setAttribute('aria-expanded', 'false');
+    current = btn;
+    var tel = btn.getAttribute('data-tel');
+    elName.textContent = btn.getAttribute('data-label') || btn.textContent;
+    elTel.textContent = tel;
+    btnCall.href = 'tel:' + tel.replace(/[^0-9+]/g, '');
+    resetCopy();
+    btn.setAttribute('aria-expanded', 'true');
+    pop.classList.add('on');
+    place(btn);
+  }
+
+  function hide(){
+    clearTimeout(hideTimer);
+    pop.classList.remove('on');
+    if(current) current.setAttribute('aria-expanded', 'false');
+    current = null;
+  }
+  function hideSoon(){ clearTimeout(hideTimer); hideTimer = setTimeout(hide, 220); }
+
+  function resetCopy(){
+    clearTimeout(doneTimer);
+    btnCopy.classList.remove('done');
+    btnCopy.innerHTML = ICON_COPY;
+    btnCopy.title = '번호 복사';
+  }
+
+  function legacyCopy(t){
+    return new Promise(function(ok, fail){
+      var ta = document.createElement('textarea');
+      ta.value = t; ta.setAttribute('readonly', '');
+      ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0';
+      document.body.appendChild(ta);
+      ta.focus(); ta.select(); ta.setSelectionRange(0, t.length);
+      var done = false;
+      try { done = document.execCommand('copy'); } catch(e){}
+      document.body.removeChild(ta);
+      done ? ok() : fail();
+    });
+  }
+  function copyText(t){
+    /* 클립보드 권한이 막힌 브라우저에서도 동작하도록 예전 방식으로 한 번 더 시도 */
+    if(navigator.clipboard && window.isSecureContext){
+      return navigator.clipboard.writeText(t).catch(function(){ return legacyCopy(t); });
+    }
+    return legacyCopy(t);
+  }
+
+  btnCopy.addEventListener('click', function(e){
+    e.stopPropagation();
+    copyText(elTel.textContent).then(function(){
+      btnCopy.classList.add('done');
+      btnCopy.innerHTML = ICON_DONE;
+      btnCopy.title = '복사됨';
+      clearTimeout(doneTimer);
+      doneTimer = setTimeout(resetCopy, 1600);
+    });
+  });
+
+  function bind(btn){
+    btn.setAttribute('aria-haspopup', 'dialog');
+    btn.setAttribute('aria-expanded', 'false');
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      if(current === btn && !canHover) hide(); else show(btn);
+    });
+    if(canHover){
+      btn.addEventListener('mouseenter', function(){ show(btn); });
+      btn.addEventListener('mouseleave', hideSoon);
+    }
+  }
+
+  var crew = document.querySelectorAll('button.crew-n');
+  for(var i = 0; i < crew.length; i++){
+    var btn = crew[i];
+    var who = btn.textContent.replace(/\s*(매니저|책임)\s*$/, '').trim();
+    var tel = CONTACTS[who];
+    if(!tel){
+      /* 번호가 없는 사람은 원래처럼 이름표로만 표시 */
+      var span = document.createElement('span');
+      span.className = btn.className;
+      span.textContent = btn.textContent;
+      btn.parentNode.replaceChild(span, btn);
+      continue;
+    }
+    btn.setAttribute('data-tel', tel);
+    bind(btn);
+  }
+
+  /* 사무국 등 번호가 직접 적힌 버튼 */
+  var links = document.querySelectorAll('button.tel-link[data-tel]');
+  for(var j = 0; j < links.length; j++) bind(links[j]);
+
+  if(canHover){
+    pop.addEventListener('mouseenter', function(){ clearTimeout(hideTimer); });
+    pop.addEventListener('mouseleave', hideSoon);
+  }
+  pop.addEventListener('click', function(e){ e.stopPropagation(); });
+  document.addEventListener('click', hide);
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') hide(); });
+  window.addEventListener('scroll', function(){ if(current) place(current); }, {passive:true});
+  window.addEventListener('resize', hide);
+})();
 </script>
 </body>
 </html>
